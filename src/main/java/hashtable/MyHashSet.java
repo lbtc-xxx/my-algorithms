@@ -10,15 +10,19 @@ import java.util.Set;
 public class MyHashSet<V> implements Set<V> {
 
     private static final int SIZE = 20;
-    private final List<V>[] bucket = (List<V>[]) new List[SIZE];
+    private final List<V>[] bucket = createBuckets(SIZE);
+
+    private List<V>[] createBuckets(int size) {
+        List<V>[] list = (List<V>[]) new List[size];
+        for (int i = 0; i < list.length; i++) {
+            list[i] = new MyLinkedList<>();
+        }
+        return list;
+    }
 
     public boolean add(final V v) {
         final int i = toIndex(v);
         List<V> vs = bucket[i];
-        if (vs == null) {
-            vs = new MyLinkedList<>();
-            bucket[i] = vs;
-        }
 
         for (V elem : vs) {
             if (elem.equals(v)) {
@@ -30,7 +34,15 @@ public class MyHashSet<V> implements Set<V> {
     }
 
     public boolean contains(final Object o) {
-        return bucket[toIndex(o)] != null;
+        final List<V> vs = bucket[toIndex(o)];
+
+        for (V v : vs) {
+            if (v.equals(o)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public boolean remove(final Object o) {
