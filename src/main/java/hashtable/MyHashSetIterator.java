@@ -4,33 +4,45 @@ import java.util.Iterator;
 
 public class MyHashSetIterator<E> implements Iterator<E> {
 
-    private int current;
-    private final Object[] bucket;
+    private int currentBucketIndex = -1;
+    private Iterator<E> currentIterator;
+    private final Iterable[] bucket;
 
-    MyHashSetIterator(final Object[] bucket) {
+    MyHashSetIterator(final Iterable[] bucket) {
         this.bucket = bucket;
-        findNext();
+        findNextIterator();
     }
 
-    private void findNext() {
-        for (int i = current; i < bucket.length; i++) {
+    private void findNextIterator() {
+        currentBucketIndex++;
+
+        for (int i = currentBucketIndex; i < bucket.length; i++) {
             if (bucket[i] != null) {
-                current = i;
+                currentIterator = (Iterator<E>) bucket[i].iterator();
+                currentBucketIndex = i;
                 return;
             }
         }
+
+        currentIterator = null;
     }
 
     @Override
     public boolean hasNext() {
-        return bucket[current] != null;
+        if (currentIterator == null) {
+            return false;
+        }
+
+        if (currentIterator.hasNext()) {
+            return true;
+        }
+
+        findNextIterator();
+        return this.hasNext();
     }
 
     @Override
     public E next() {
-        final Object rc = bucket[current];
-        current++;
-        findNext();
-        return (E) rc;
+        return currentIterator.next();
     }
 }

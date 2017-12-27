@@ -60,5 +60,11 @@ public class MyHashSetTest {
 
         assertThat(sut2.add(obj1), is(true));
         assertThat(sut2.add(obj2), is(true));
+
+        final Iterator<SomeFakeObjectReturnsFixedHashCode> actual = sut2.iterator();
+        assertThat(actual.hasNext(), is(true));
+        assertThat(actual.next(), is(obj1));
+        assertThat(actual.hasNext(), is(true));
+        assertThat(actual.next(), is(obj2));
     }
 }

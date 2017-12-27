@@ -1,21 +1,32 @@
 package hashtable;
 
+import linkedlist.MyLinkedList;
+
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 public class MyHashSet<V> implements Set<V> {
 
     private static final int SIZE = 20;
-    private final Object[] bucket = new Object[SIZE];
+    private final List<V>[] bucket = (List<V>[]) new List[SIZE];
 
     public boolean add(final V v) {
-        if (contains(v)) {
-            return false;
+        final int i = toIndex(v);
+        List<V> vs = bucket[i];
+        if (vs == null) {
+            vs = new MyLinkedList<>();
+            bucket[i] = vs;
         }
 
-        bucket[toIndex(v)] = v;
-        return true;
+        for (V elem : vs) {
+            if (elem.equals(v)) {
+                return false;
+            }
+        }
+
+        return vs.add(v);
     }
 
     public boolean contains(final Object o) {
